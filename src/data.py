@@ -1,6 +1,8 @@
+from datetime import datetime
 import requests
 import pandas as pd
 import yfinance as yf
+from bs4 import BeautifulSoup
 
 달러원= 'USDKRW=X'
 
@@ -26,3 +28,11 @@ def 야후파이낸스환율추이_가져오기(기간, 이평선, ATR계수):
     df.dropna(inplace=True)
     return df.loc[:, ['Close', 'High', 'Low',
         f'SMA{이평선}', f'SMA{이평선}_UPPER', f'SMA{이평선}_LOWER']].tail(기간)
+
+def 구글파이낸스환율_가져오기():
+    URL = 'https://finance.google.com/finance/converter?a=1&from=USD&to=KRW'
+    tag = BeautifulSoup(requests.get('https://www.google.com/finance/quote/USD-KRW').text).select_one('div[data-last-price]')
+    ts = int(tag.get('data-last-normal-market-timestamp'))
+    dt = datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    dt = datetime.strptime(dt, '%Y-%m-%d %H:%M:%S') + pd.Timedelta(hours=9)
+    return dict(price=tag.get('data-last-price'), date=dt)
