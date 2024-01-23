@@ -55,7 +55,7 @@ def 환율추이():
             st.session_state.get('이평선'),
             st.session_state.get('ATR계수'))
         fig = px.line(df, title='달러 원화 환율 추이')
-        st.plotly_chart(fig)
+        st.plotly_chart(fig, use_container_width=True)
         col1, col2, col3 = st.columns(3)
         SMA = f'SMA{st.session_state.get("이평선")}'
         col1.metric('상단(원)', f'{float(df.iloc[-1][SMA+"_UPPER"]):.2f}')
